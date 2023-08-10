@@ -130,6 +130,16 @@ def_unit(
     prefixes=True,
 )
 
+###########################################################################
+# SIGNAL PROCESSING
+# (maybe this is a subset of computer)
+def_unit(
+    (["sample","s"], ["sample"]),
+    namespace=_ns,
+    prefixes=si_prefixes + binary_prefixes,
+    doc="index into a discrete time series",
+)
+
 
 ###########################################################################
 # CLEANUP
