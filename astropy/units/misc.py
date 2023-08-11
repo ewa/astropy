@@ -129,6 +129,12 @@ def_unit(
     namespace=_ns,
     prefixes=True,
 )
+def_unit(
+    (["sample","sa"], ["sample"]),
+    namespace=_ns,
+    prefixes=si_prefixes + binary_prefixes,
+    doc="index into a discrete time series",
+)
 
 
 ###########################################################################

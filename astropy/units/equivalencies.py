@@ -35,6 +35,7 @@ __all__ = [
     "molar_mass_amu",
     "pixel_scale",
     "plate_scale",
+    "sample_rate_scale",
     "Equivalency",
 ]
 
@@ -884,6 +885,37 @@ def plate_scale(platescale):
         "plate_scale",
         {"platescale": platescale},
     )
+
+##
+## Sample
+##
+def sample_rate_scale(samplerate):
+    """
+    Convert between sample counts (in units of ``sample``) and other units,
+    given a particular ``samplerate``.
+
+    Parameters
+    ----------
+    samplerate : `~astropy.units.Quantity`
+        The pixel scale either in units of <unit>/sample or samples/<unit>.
+    """
+    decomposed = samplerate.unit.decompose()
+    dimensions = dict(zip(decomposed.bases, decomposed.powers))
+    sample_power = dimensions.get(misc.sample, 0)
+
+    if sample_power == -1:
+        physical_unit = Unit(samplerate * misc.sample)
+    elif sample_power == 1:
+        physical_unit = Unit(misc.sample / samplerate)
+    else:
+        raise UnitsError(
+            "The pixel scale unit must have pixel dimensionality of 1 or -1."
+        )
+
+    return Equivalency(
+        [(misc.sample, physical_unit)], "sample_rate_scale", {"samplerate": samplerate}
+    )
+
 
 
 # -------------------------------------------------------------------------

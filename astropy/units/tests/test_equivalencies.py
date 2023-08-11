@@ -964,6 +964,23 @@ def test_plate_scale():
     assert_quantity_allclose(asec.to(u.mm, u.plate_scale(platescale2)), mm)
 
 
+    
+
+def test_sample_rate_scale():
+    samples = 20 * u.sample
+    seconds = 2 * u.second
+
+    # Just testing rate quantities themselves
+    rate1=(10*u.sample / u.second)
+    rate2=(u.sample * 10 * u.hertz)
+    assert(rate1 == rate2)
+    
+    scale_10_hz = u.sample_rate_scale(rate1)
+    
+    assert_quantity_allclose(samples.to(u.second, scale_10_hz), seconds)
+    assert_quantity_allclose(seconds.to(u.sample, scale_10_hz), samples)
+    
+
 def test_equivelency():
     ps = u.pixel_scale(10 * u.arcsec / u.pix)
     assert isinstance(ps, Equivalency)
