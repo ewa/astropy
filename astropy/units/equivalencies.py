@@ -887,8 +887,15 @@ def plate_scale(platescale):
     )
 
 ##
-## Sample
+## Samples
 ##
+
+# Maybe this needs to be exported, but that's a later problem
+hertz_are_sample_per_second=Equivalency(
+    [(si.Hz, misc.sample * si.Hz)],
+    "hertz_are_sample_per_second",
+)
+
 def sample_rate_scale(samplerate):
     """
     Convert between sample counts (in units of ``sample``) and other units,
@@ -899,6 +906,7 @@ def sample_rate_scale(samplerate):
     samplerate : `~astropy.units.Quantity`
         The pixel scale either in units of <unit>/sample or samples/<unit>.
     """
+    
     decomposed = samplerate.unit.decompose()
     dimensions = dict(zip(decomposed.bases, decomposed.powers))
     sample_power = dimensions.get(misc.sample, 0)
@@ -908,13 +916,21 @@ def sample_rate_scale(samplerate):
     elif sample_power == 1:
         physical_unit = Unit(misc.sample / samplerate)
     else:
-        raise UnitsError(
-            "The pixel scale unit must have pixel dimensionality of 1 or -1."
-        )
+        # See if samplerate has an equivalence to samples/second (including our hertz equivalence)
+        try:
+            converted=samplerate.to(misc.sample / si.second, hertz_are_sample_per_second)
+            return sample_rate_scale(converted)
+        except Exception as e:
+            raise UnitsError("The the samplerate scale unit must have pixel dimensionality of 1 or -1.") from e
 
     return Equivalency(
-        [(misc.sample, physical_unit)], "sample_rate_scale", {"samplerate": samplerate}
+        [(misc.sample, physical_unit)],
+        "sample_rate_scale",
+        {"samplerate": samplerate},
     )
+
+
+
 
 
 
